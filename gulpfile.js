@@ -36,7 +36,7 @@ function taskWatch() {
     injectChanges: true, // Chèn thay đổi mà không reload toàn trang
     notify: false, // Tắt thông báo BrowserSync trên trình duyệt
   });
-  watch("assets/js/*.js", js); // Theo dõi file JS
+  watch("assets/js/*.js", js); // Theo dõi file JS và là file code chính
   watch("assets/scss/*.scss", scss); // Theo dõi file SCSS
   watch("*.html").on("change", browserSync.reload); // Reload khi file HTML thay đổi
 }
