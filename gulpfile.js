@@ -1,3 +1,52 @@
+// const { watch, dest, src, series, parallel } = require("gulp"); // Nhập các hàm từ Gulp
+// const browserSync = require("browser-sync").create(); // Nhập BrowserSync
+// const rename = require("gulp-rename"); // Nhập plugin đổi tên file
+// const uglify = require("gulp-uglify"); // Nhập plugin nén JS
+// const sass = require("gulp-sass")(require("sass")); // Nhập plugin biên dịch SCSS
+// const cleanCSS = require("gulp-clean-css"); // Nhập plugin nén CSS
+// const plumber = require("gulp-plumber"); // Nhập plugin xử lý lỗi (không dừng task khi lỗi)
+
+// // Task xử lý JavaScript
+// function js() {
+//   return src("assets/js/*.js", { allowEmpty: true }) // Lấy tất cả file .js trong assets/js
+//     .pipe(plumber()) // Ngăn task dừng khi có lỗi
+//     .pipe(uglify()) // Nén file JS
+//     .pipe(rename({ suffix: ".min" })) // Thêm hậu tố .min
+//     .pipe(dest("assets/main/js")) // Xuất file đã nén vào assets/main/js
+//     .pipe(browserSync.stream()); // Reload trình duyệt (dùng stream thay reload)
+// }
+
+// // Task xử lý SCSS
+// function scss() {
+//   return src("assets/scss/*.scss", { allowEmpty: true }) // Lấy tất cả file .scss trong assets/scss
+//     .pipe(plumber()) // Ngăn task dừng khi có lỗi
+//     .pipe(sass().on("error", sass.logError)) // Biên dịch SCSS thành CSS
+//     .pipe(cleanCSS()) // Nén file CSS
+//     .pipe(rename({ suffix: ".min" })) // Thêm hậu tố .min
+//     .pipe(dest("assets/main/css")) // Xuất file đã nén vào assets/main/css
+//     .pipe(browserSync.stream()); // Reload trình duyệt
+// }
+
+// // Task theo dõi file và chạy server
+// function taskWatch() {
+//   browserSync.init({
+//     server: {
+//       baseDir: "./", // Chạy server từ thư mục gốc
+//     },
+//     injectChanges: true, // Chèn thay đổi mà không reload toàn trang
+//     notify: false, // Tắt thông báo BrowserSync trên trình duyệt
+//   });
+//   watch("assets/js/*.js", js); // Theo dõi file JS
+//   watch("assets/scss/*.scss", scss); // Theo dõi file SCSS
+//   watch("*.html").on("change", browserSync.reload); // Reload khi file HTML thay đổi
+// }
+
+// // Task mặc định
+// exports.default = series(parallel(js, scss), taskWatch);
+
+// // Task riêng lẻ (có thể chạy bằng `gulp js` hoặc `gulp scss`)
+// exports.js = js;
+// exports.scss = scss;
 const { watch, dest, src, series, parallel } = require("gulp"); // Nhập các hàm từ Gulp
 const browserSync = require("browser-sync").create(); // Nhập BrowserSync
 const rename = require("gulp-rename"); // Nhập plugin đổi tên file
@@ -27,6 +76,26 @@ function scss() {
     .pipe(browserSync.stream()); // Reload trình duyệt
 }
 
+// Task xử lý JavaScript trong thư mục libs
+function libsJs() {
+  return src("assets/libs/*.js", { allowEmpty: true }) // Lấy tất cả file .js trong assets/libs
+    .pipe(plumber()) // Ngăn task dừng khi có lỗi
+    .pipe(uglify()) // Nén file JS
+    .pipe(rename({ suffix: ".min" })) // Thêm hậu tố .min
+    .pipe(dest("assets/main/libs/js")) // Xuất file đã nén vào assets/main/libs/js
+    .pipe(browserSync.stream()); // Reload trình duyệt
+}
+
+// Task xử lý CSS trong thư mục libs
+function libsCss() {
+  return src("assets/libs/*.css", { allowEmpty: true }) // Lấy tất cả file .css trong assets/libs
+    .pipe(plumber()) // Ngăn task dừng khi có lỗi
+    .pipe(cleanCSS()) // Nén file CSS
+    .pipe(rename({ suffix: ".min" })) // Thêm hậu tố .min
+    .pipe(dest("assets/main/libs/css")) // Xuất file đã nén vào assets/main/libs/css
+    .pipe(browserSync.stream()); // Reload trình duyệt
+}
+
 // Task theo dõi file và chạy server
 function taskWatch() {
   browserSync.init({
@@ -38,12 +107,16 @@ function taskWatch() {
   });
   watch("assets/js/*.js", js); // Theo dõi file JS
   watch("assets/scss/*.scss", scss); // Theo dõi file SCSS
+  watch("assets/libs/*.js", libsJs); // Theo dõi file JS trong thư mục libs
+  watch("assets/libs/*.css", libsCss); // Theo dõi file CSS trong thư mục libs
   watch("*.html").on("change", browserSync.reload); // Reload khi file HTML thay đổi
 }
 
 // Task mặc định
-exports.default = series(parallel(js, scss), taskWatch);
+exports.default = series(parallel(js, scss, libsJs, libsCss), taskWatch);
 
-// Task riêng lẻ (có thể chạy bằng `gulp js` hoặc `gulp scss`)
+// Task riêng lẻ (có thể chạy bằng `gulp js`, `gulp scss`, `gulp libsJs` hoặc `gulp libsCss`)
 exports.js = js;
 exports.scss = scss;
+exports.libsJs = libsJs;
+exports.libsCss = libsCss;
