@@ -77,24 +77,24 @@ function scss() {
 }
 
 // Task xử lý JavaScript trong thư mục libs
-function libsJs() {
-  return src("assets/libs/*.js", { allowEmpty: true }) // Lấy tất cả file .js trong assets/libs
-    .pipe(plumber()) // Ngăn task dừng khi có lỗi
-    .pipe(uglify()) // Nén file JS
-    .pipe(rename({ suffix: ".min" })) // Thêm hậu tố .min
-    .pipe(dest("assets/main/libs/js")) // Xuất file đã nén vào assets/main/libs/js
-    .pipe(browserSync.stream()); // Reload trình duyệt
-}
+// function libsJs() {
+//   return src("assets/libs/*.js", { allowEmpty: true }) // Lấy tất cả file .js trong assets/libs
+//     .pipe(plumber()) // Ngăn task dừng khi có lỗi
+//     .pipe(uglify()) // Nén file JS
+//     .pipe(rename({ suffix: ".min" })) // Thêm hậu tố .min
+//     .pipe(dest("assets/main/libs/js")) // Xuất file đã nén vào assets/main/libs/js
+//     .pipe(browserSync.stream()); // Reload trình duyệt
+// }
 
 // Task xử lý CSS trong thư mục libs
-function libsCss() {
-  return src("assets/libs/*.css", { allowEmpty: true }) // Lấy tất cả file .css trong assets/libs
-    .pipe(plumber()) // Ngăn task dừng khi có lỗi
-    .pipe(cleanCSS()) // Nén file CSS
-    .pipe(rename({ suffix: ".min" })) // Thêm hậu tố .min
-    .pipe(dest("assets/main/libs/css")) // Xuất file đã nén vào assets/main/libs/css
-    .pipe(browserSync.stream()); // Reload trình duyệt
-}
+// function libsCss() {
+//   return src("assets/libs/*.css", { allowEmpty: true }) // Lấy tất cả file .css trong assets/libs
+//     .pipe(plumber()) // Ngăn task dừng khi có lỗi
+//     .pipe(cleanCSS()) // Nén file CSS
+//     .pipe(rename({ suffix: ".min" })) // Thêm hậu tố .min
+//     .pipe(dest("assets/main/libs/css")) // Xuất file đã nén vào assets/main/libs/css
+//     .pipe(browserSync.stream()); // Reload trình duyệt
+// }
 
 // Task theo dõi file và chạy server
 function taskWatch() {
@@ -107,16 +107,12 @@ function taskWatch() {
   });
   watch("assets/js/*.js", js); // Theo dõi file JS
   watch("assets/scss/*.scss", scss); // Theo dõi file SCSS
-  watch("assets/libs/*.js", libsJs); // Theo dõi file JS trong thư mục libs
-  watch("assets/libs/*.css", libsCss); // Theo dõi file CSS trong thư mục libs
   watch("*.html").on("change", browserSync.reload); // Reload khi file HTML thay đổi
 }
 
 // Task mặc định
-exports.default = series(parallel(js, scss, libsJs, libsCss), taskWatch);
+exports.default = series(parallel(js, scss), taskWatch);
 
 // Task riêng lẻ (có thể chạy bằng `gulp js`, `gulp scss`, `gulp libsJs` hoặc `gulp libsCss`)
 exports.js = js;
 exports.scss = scss;
-exports.libsJs = libsJs;
-exports.libsCss = libsCss;
